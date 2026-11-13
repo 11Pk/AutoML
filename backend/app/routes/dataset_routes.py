@@ -5,11 +5,58 @@ from pathlib import Path
 from uuid import uuid4
 
 from backend.app.controllers.dataset_controller import (
-    upload_dataset_controller
+    upload_dataset_controller,prepare_dataset_controller
+)
+
+from app.schemas.dataset_schema import DatasetConfigRequest
+
+
+router = APIRouter(
+    prefix="/datasets",
+    tags=["Datasets"]
 )
 
 
-router = APIRouter()
+@router.post("/{dataset_id}/prepare")
+def prepare_dataset_route(
+    dataset_id: str,
+    config: DatasetConfigRequest
+):
+
+    try:
+
+        result = prepare_dataset_controller(
+            dataset_id=dataset_id,
+            config=config
+        )
+
+        return {
+            "message": "Dataset prepared successfully",
+            "data": result
+        }
+
+    except FileNotFoundError as e:
+
+        raise HTTPException(
+            status_code=404,
+            detail=str(e)
+        )
+
+    except ValueError as e:
+
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=500,
+            detail="Dataset preparation failed."
+        )
+
+
 
 BASE_DIR = Path(__file__).resolve().parents[3]
 
