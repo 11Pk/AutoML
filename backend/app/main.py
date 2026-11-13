@@ -1,4 +1,7 @@
 from fastapi import FastAPI
+from backend.app.routes.dataset_routes import router as dataset_router
+
+
 
 app = FastAPI(
     title="AutoML API",
@@ -6,6 +9,11 @@ app = FastAPI(
     version="1.0.0"
 )
 
+app.include_router(
+    dataset_router,
+    prefix="/api/datasets",
+    tags=["Dataset Management"]
+)
 
 @app.get("/")
 def home():
